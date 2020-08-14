@@ -49,7 +49,7 @@ class App extends Component {
           onPress={this.buttonAlert} 
         />
 
-        <WebView source={{ uri: 'https://www.konexio.eu/' }}/>
+        <WebView source={{ uri: 'https://www.konexio.eu/' }} style={styles.webviewLink}/>
         <ActivityIndicator size="small" color="#0000ff" />
         
                 
@@ -79,6 +79,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     paddingVertical: 80,
   },
+  webviewLink: {
+    width: 400,
+    height: 600
+  }
 });
 
 export default App;

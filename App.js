@@ -1,88 +1,85 @@
-
 import React, { Component } from 'react';
 import { 
-  StyleSheet, 
-  Text, 
-  View, 
-  ScrollView, 
-  Image, 
-  ActivityIndicator, 
-  Button, 
-  Alert, 
-  Vibration } from 'react-native';
-import { WebView } from 'react-native-webview';
+    StyleSheet, 
+    Text, 
+    View, 
+    FlatList,
+    Dimensions
+    } from 'react-native';
+import Image from 'react-native-remote-svg';
+
 
 class App extends Component {
-  buttonAlert = () =>{
-    Vibration.vibrate(600);
-    Alert.alert(
-      "Button Alert",
-      "You're click",
-      [
-        {
-          text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "cancel"
-        },
-        { text: "OK", onPress: () => console.log("OK Pressed") }
-      ],
-      { cancelable: false }
-    );
-  }
+    constructor(props){
+        super(props);
+        this.state = {
+            countries: []
+        }
+    }
 
-  render() {
-    return (
-      <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>Exo 1</Text>
-        <Text style={styles.text1}>Galla patre Constantini e Massa quadriennio Tuscos quoque quoque cum.</Text>
-        <Text style={styles.text2}>Ferri respondeat quisque quasi quisque in facit amicum nullam alteram.</Text>
-        <Text style={styles.text3}>Bella adsimulata ut iactitant profecto primo severitate a multiplicantes in.</Text>
-        <Image 
-          source={require('./assets/konexio-logo_1.png')} 
-        />
-        <Image
-          source={{ uri: 'https://www.konexio.eu/uploads/1/2/0/2/120245745/konexio-logo_1.png' }}
-          style={{ height: 100 }} 
-        />
-        <Button 
-          title={"Click here"} 
-          onPress={this.buttonAlert} 
-        />
+    async componentDidMount() {
+        const url = 'http://restcountries.eu/rest/v2/all';
+        const response = await fetch(url);
+        let countries = await response.json();
+        // console.log(countries);
+        this.setState({ countries });
+    }
 
-        <WebView source={{ uri: 'https://www.konexio.eu/' }} style={styles.webviewLink}/>
-        <ActivityIndicator size="small" color="#0000ff" />
-        
-                
-      </ScrollView>
-    );
-  }
+    renderItem = ({item}) => {
+        console.log("flag", item.flag)
+        return(
+            <View style={styles.country}>
+                <Image 
+                    source={{ uri: `${item.flag}` }} 
+                    style={styles.image}
+                />
+                <Text>
+                    {item.name}
+                </Text>
+                <Text>
+                    {item.capital}
+                </Text>
+            </View>
+        )
+    }
+      
+    render() {        
+        const { countries } = this.state;
+        return (
+            <View style={styles.container}>
+                <Text style={styles.title}>Exo 2</Text>
+                <FlatList
+                    data={countries}
+                    renderItem={this.renderItem}
+                    keyExtractor={countries => countries.alpha3Code}
+                />
+            </View>
+        );
+    }
 }
 
+const win = Dimensions.get('window');
+
 const styles = StyleSheet.create({
-  container: {
-  },
-  title: {
-    paddingTop: 30,
-    fontSize: 50,
-    textDecorationLine: "underline",
-    textAlign: "center"
-  },
-  text1: {
-    fontSize: 30,
-    paddingVertical: 80,
-  },
-  text2: {
-    textAlign: 'center',
-    paddingVertical: 80,
-  },
-  text3: {
-    fontWeight: 'bold',
-    paddingVertical: 80,
-  },
-  webviewLink: {
-    width: 400,
-    height: 600
-  }
+    container: {
+    },
+    title: {
+        paddingTop: 30,
+        fontSize: 50,
+        textDecorationLine: "underline",
+        textAlign: "center"
+    },
+    country: {
+        padding: 20,
+        marginVertical: 8,
+        marginHorizontal: 16,
+    },
+    image: {
+        flex: 1,
+        width: 150,
+        height: 100,
+        resizeMode: 'contain'
+    }
 });
 
 export default App;
